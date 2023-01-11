@@ -15,7 +15,7 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const dbURI = "mongodb+srv://junx:joharisoa2001@clustertestnode.tg9keeg.mongodb.net/?retryWrites=true&w=majority";
+const dbURI = "mongodb+srv://junx:joharisoa2001@clustertestnode.tg9keeg.mongodb.net/garage?retryWrites=true&w=majority";
 mongoose.set("strictQuery", false);
 mongoose
 	.connect(dbURI)
