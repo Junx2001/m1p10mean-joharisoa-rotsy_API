@@ -6,7 +6,6 @@ const User = require("./user.model");
 
 
 
-
 const userRegister = (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
@@ -27,7 +26,7 @@ const userRegister = (req, res, next) => {
 							email: req.body.email,
 							password: hash,
               name: req.body.name,
-              phone_number: req.body.phone_number
+              role: req.body.role
 						});
 						user
 							.save()
@@ -41,7 +40,7 @@ const userRegister = (req, res, next) => {
                           userId: result._id,
                           email: result.email,
                           name: result.name,
-                          phone_number: result.phone_number,
+                          role: result.role,
                         },
                       })
 									})
@@ -94,7 +93,7 @@ const userLogin = (req, res, next) => {
               userId: user[0]._id,
 							email: user[0].email,
 							name: user[0].name,
-							phone_number: user[0].phone_number,
+							role: user[0].role,
 						},
 						process.env.jwtSecret,
 						{
@@ -108,7 +107,7 @@ const userLogin = (req, res, next) => {
 							userId: user[0]._id,
 							name: user[0].name,
 							email: user[0].email,
-							phone_number: user[0].phone_number,
+							role: user[0].role,
 						},
 						token: token,
 					});
@@ -140,8 +139,24 @@ const getMe = async (req, res) => {
 	}
 };
 
+const atelier = async (req, res) => {
+	const userId = req.user.userId;
+	const user = await User.findById(userId);
+	if (user) {
+		res.status(200).json({
+			message: "Welcome to the Atelier",
+			user,
+		});
+	} else {
+		res.status(400).json({
+			message: "Bad request",
+		});
+	}
+};
+
 module.exports = {
   userLogin,
   userRegister,
 	getMe,
+	atelier
 };
