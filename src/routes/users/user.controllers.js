@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const mongoo = require("mongoose");
 
 const User = require("./user.model");
+const resetPassword = require('../../services/mailing/confirm-email'); 
 
 
 
@@ -154,9 +155,21 @@ const atelier = async (req, res) => {
 	}
 };
 
+const essaiEmail = async (req, res) => {
+	try {
+		await resetPassword.sendEmail('ratsirarsonj@gmail.com','Essai-Token');
+		return res.status(200).send({message: 'Email de Bienvenue Envoyé'});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({message: 'Internal server error'});
+	}
+
+};
+
 module.exports = {
   userLogin,
   userRegister,
-	getMe,
-	atelier
+  getMe,
+  atelier,
+  essaiEmail
 };
