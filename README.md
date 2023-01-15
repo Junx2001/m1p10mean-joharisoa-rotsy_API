@@ -69,14 +69,15 @@ List of variables used in the project
 
 Clone the project
 
+- Install Github CLI first [Github CLI](https://github.com/cli/cli#installation)
 ```bash
-  git clone https://DevelopperBusinessSolution@bitbucket.org/businesssolutionnexthope/manoova-payment.git
+  gh repo clone Junx2001/m1p10mean-joharisoa-rotsy_API
 ```
 
 Go to the project directory
 
 ```bash
-  cd manoova-payment
+  cd m1p10mean-joharisoa-rotsy_API
 ```
 
 Install dependencies

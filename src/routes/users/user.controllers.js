@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const mongoo = require("mongoose");
 
 const User = require("./user.model");
-const resetPassword = require('../../services/mailing/confirm-email'); 
+const mail = require('../../services/mailing/confirm-email'); 
 
 
 
@@ -157,7 +157,7 @@ const atelier = async (req, res) => {
 
 const essaiEmail = async (req, res) => {
 	try {
-		await resetPassword.sendEmail('ratsirarsonj@gmail.com','Essai-Token');
+		await mail.sendEmail('ratsirarsonj@gmail.com','Essai-Token');
 		return res.status(200).send({message: 'Email de Bienvenue Envoyé'});
 	} catch (error) {
 		console.log(error);
