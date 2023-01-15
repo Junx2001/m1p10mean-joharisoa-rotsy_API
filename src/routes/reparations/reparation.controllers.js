@@ -2,6 +2,7 @@ const mongoo = require("mongoose");
 
 const Reparation = require("./reparation.model");
 const Car = require("../cars/car.model");
+const User = require("../users/user.model");
 
 
 
@@ -9,14 +10,16 @@ const Car = require("../cars/car.model");
 const findReparationsByCar = async (req, res) => {
 	const immatr = req.params.immatriculation;
 	const voiture = await Car.findOne({ immatriculation : immatr});
-	if(req.user.email != voiture.client.email)
+	const client = await User.findOne({ _id: voiture.client });
+
+	if(req.user.email != client.email)
 	{
 		return res.status(401).json({
 			message: 'You can only manage your own cars'
 		  });
 	}
 
-	await Reparation.find({ 'voiture.immatriculation' : immatr }).exec()
+	await Reparation.find({ 'voiture' : voiture._id }).exec()
 		.then((result) => {
 			console.log(result);
 			res.status(200).json({

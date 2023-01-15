@@ -9,13 +9,12 @@ const depositCar = async (req, res) => {
 	const car = new Car({
 		_id: new mongoo.Types.ObjectId(),
 		immatriculation: req.body.immatriculation,
-		client: req.body.client,
+		client: req.user.userId,
 		modele: req.body.modele,
   		marque: req.body.marque,
   		etat: req.body.etat,
   		dateDepot: Date.now(),
 	});
-	car.markModified('client');
 	car
 		.save()
 		.then(async (result) => {

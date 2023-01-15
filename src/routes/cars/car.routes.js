@@ -6,7 +6,7 @@ const carController = require('./car.controllers');
 const router = express.Router();
 
 
-router.post('/deposit', carController.depositCar);
+router.post('/deposit', checkAuth, carController.depositCar);
 router.post('/recover/:immatriculation', carController.recoverCar);
 
 module.exports = router;
