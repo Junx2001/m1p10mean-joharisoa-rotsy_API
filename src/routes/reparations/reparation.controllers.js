@@ -14,7 +14,9 @@ const findReparationsByUser = async (req, res) => {
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec()
-		.then((result) => {
+		.then( async (result) => {
+
+			console.log(result);
 			result = result.filter( function(res)
 				{
 					if(res.voiture.client._id == user.userId){
@@ -30,7 +32,7 @@ const findReparationsByUser = async (req, res) => {
 			for(let i = 0;i<result.length;i++)
 			{
 			
-				ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
 					//console.log(result1);
 
 					var retour = {
