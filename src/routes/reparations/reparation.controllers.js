@@ -1,10 +1,70 @@
 const mongoo = require("mongoose");
 
 const Reparation = require("./reparation.model");
+const ReparationDetails = require("../reparationDetails/reparationDetails.model");
 const Car = require("../cars/car.model");
 const User = require("../users/user.model");
 
 
+
+const findReparationsByUser = async (req, res) => {
+	const user = req.user;
+
+	await Reparation.find().populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then((result) => {
+			result = result.filter( function(res)
+				{
+					if(res.voiture.client._id == user.userId){
+						return true;
+					}
+					return false;
+				}
+			);
+			//console.log(result);
+
+			var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+			
+				ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+					//console.log(result1);
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1
+					};
+					arrayFinal.push(retour);
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
 
 
 const findReparationsByCar = async (req, res) => {
@@ -35,24 +95,6 @@ const findReparationsByCar = async (req, res) => {
 	
 };
 
-const findReparationsByUser = async (req, res) => {
-	const user = req.user;
-
-	await Reparation.find({ 'voiture.client.email' : user.email }).exec()
-		.then((result) => {
-			console.log(result);
-			res.status(200).json({
-				reparations: result
-			  })
-		})
-		.catch((error) => {
-			console.log(error);
-			res.status(500).json({
-				message: error.toString()
-			  })
-		});
-	
-};
 
 
 

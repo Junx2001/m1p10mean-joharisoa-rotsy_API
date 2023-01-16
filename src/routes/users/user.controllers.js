@@ -7,7 +7,7 @@ const mail = require('../../services/mailing/confirm-email');
 
 
 
-const userRegister = (req, res, next) => {
+const userRegister = async (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -16,6 +16,7 @@ const userRegister = (req, res, next) => {
           message:"Email Exists"
         })
 			} else {
+				//mail.sendEmail(req.body.email,'TOKEN_ACTIVATE_ACCOUNT');
 				bcrypt.hash(req.body.password, 10, (err, hash) => {
 					if (err) {
 						return res.status(500).json({
@@ -26,8 +27,7 @@ const userRegister = (req, res, next) => {
 							_id: new mongoo.Types.ObjectId(),
 							email: req.body.email,
 							password: hash,
-              name: req.body.name,
-              role: req.body.role
+              				name: req.body.name,
 						});
 						user
 							.save()
@@ -35,13 +35,14 @@ const userRegister = (req, res, next) => {
 								await result
 									.save()
 									.then((result1) => {
-                      console.log(`User created ${result}`)
+                      console.log(`User created ${result}, please verify your email to activate it`)
                       res.status(201).json({
                         userDetails: {
                           userId: result._id,
                           email: result.email,
                           name: result.name,
                           role: result.role,
+						  active: result.active
                         },
                       })
 									})
@@ -79,6 +80,11 @@ const userLogin = (req, res, next) => {
 			if (user.length < 1) {
 				return res.status(401).json({
 					message: "Auth failed: Email not found probably",
+				});
+			}
+			if (user[0].active != 1) {
+				return res.status(401).json({
+					message: "Auth failed: Please Verify your email",
 				});
 			}
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {

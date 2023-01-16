@@ -7,6 +7,7 @@ const UserRole = require('../../constants/UserRole');
 
 router.post('/signup', userControllers.userRegister);
 router.post('/login', userControllers.userLogin);
+
 router.get('/me', checkAuth, userControllers.getMe);
 router.get('/atelier', [checkAuth, checkRole([UserRole.ROLE_USER_ATELIER])], userControllers.atelier);
 
