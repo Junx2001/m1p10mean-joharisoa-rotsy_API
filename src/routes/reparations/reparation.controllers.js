@@ -16,7 +16,6 @@ const findReparationsByUser = async (req, res) => {
 	  }).exec()
 		.then( async (result) => {
 
-			console.log(result);
 			result = result.filter( function(res)
 				{
 					if(res.voiture.client._id == user.userId){
@@ -81,12 +80,52 @@ const findReparationsByCar = async (req, res) => {
 		  });
 	}
 
-	await Reparation.find({ 'voiture' : voiture._id }).exec()
-		.then((result) => {
-			console.log(result);
+	await Reparation.find().populate({
+		path: 'voiture',
+	  }).exec()
+		.then( async (result) => {
+
+			result = result.filter( function(res)
+				{
+					if(res.voiture.immatriculation == immatr){
+						return true;
+					}
+					return false;
+				}
+			);
+			//console.log(result);
+
+			var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+					//console.log(result1);
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1
+					};
+					arrayFinal.push(retour);
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
 			res.status(200).json({
-				reparations: result
-			  })
+				arrayFinal
+			  });
+
+
 		})
 		.catch((error) => {
 			console.log(error);
