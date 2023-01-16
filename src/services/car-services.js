@@ -18,7 +18,17 @@ const isCarAvailableForRecover = async (carObject) => {
     return true;
 }
 
+const getCarState = async (carObject) => {
+    const repar = await Reparation.find({ voiture : carObject._id, dateRecup: null});
+    if (repar.length == 0){
+        return "OUT OF GARAGE";
+    }
+
+    return "INSIDE GARAGE";
+}
+
 module.exports = {
     isCarAvailableForDeposit,
-    isCarAvailableForRecover
+    isCarAvailableForRecover,
+    getCarState
 };

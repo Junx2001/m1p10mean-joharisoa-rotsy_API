@@ -130,10 +130,71 @@ const recoverCar = async (req, res) => {
 
 };
 
+const carListByUser = async (req, res) => {
+	const user = req.user;
+	var arrayFinal = [];
+
+	await Car.find({ client : user.userId}).exec()
+		.then(async (result) => {
+
+			for(let i = 0;i < result.length;i++)
+			{
+				var carState = await carService.getCarState(result[i]);
+				var retour = {
+					car: result[i],
+					state: carState,
+				};
+				arrayFinal.push(retour);
+
+			}
+			
+			res.status(200).json(arrayFinal);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
+const carDepositListByUser = async (req, res) => {
+	const user = req.user;
+	var arrayFinal = []
+
+	await Car.find({ client : user.userId}).exec()
+		.then(async (result) => {
+
+			for(let i = 0;i < result.length;i++)
+			{
+				var carState = await carService.getCarState(result[i]);
+				if(carState == "INSIDE GARAGE"){
+					arrayFinal.push(result[i]);
+				}
+	
+
+			}
+			
+			res.status(200).json(arrayFinal);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 
 
 module.exports = {
 	addCar,
 	depositCar,
-	recoverCar
+	recoverCar,
+	carListByUser,
+	carDepositListByUser
 };
