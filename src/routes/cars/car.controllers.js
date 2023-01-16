@@ -63,7 +63,10 @@ const depositCar = async (req, res) => {
 					.save()
 						.then((result1) => {
 						  console.log(`Car has been deposit ${result}`)
-						  res.status(201).json(reparation)
+						  res.status(201).json({
+							message: 'Car has been deposit',
+							reparation: reparation
+						  })
 										})
 										.catch((err) => {
 						console.log(err)
@@ -89,19 +92,42 @@ const depositCar = async (req, res) => {
 
 
 const recoverCar = async (req, res) => {
+
+	const immatr = req.params.immatriculation
+	const voiture = await Car.findOne({ immatriculation : immatr});
+	if(!voiture){
+		return res.status(404).json({
+			message: "Vehicule Not Found"
+		  });
+	}
+
 	
-	const immatr = req.params.immatriculation;
-	await Car.updateOne({ immatriculation: immatr }, { etat: 'ab' , dateRecup: Date.now()})
+	const canBeRecovered = await carService.isCarAvailableForRecover(voiture);
+
+	if(canBeRecovered)
+	{
+		await Reparation.updateOne({ voiture : voiture._id, dateRecup: null}, { dateRecup: Date.now()})
 		.then((result) => {
-                      console.log(`Car has been recovered`);
-                      res.status(201).json(result);
-						})
-		.catch((err) => {
-                    console.log(err)
-                    res.status(400).json({
-                      message: err.toString()
-                    })
+						  console.log(`Car has been recovered`);
+						  res.status(201).json({
+							message: 'Car has been recovered',
+							reparation: result
+						  });
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
 						});
+							});
+	}
+	else
+	{
+		res.status(500).json({
+			message: "Your car is not in the garage"
+		  });
+	}
+
 };
 
 

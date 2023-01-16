@@ -7,8 +7,8 @@ const router = express.Router();
 
 
 router.post('/add', checkAuth, carController.addCar);
-router.post('/deposit/:immatriculation', checkAuth, carController.depositCar);
 
-router.post('/recover/:immatriculation', carController.recoverCar);
+router.post('/deposit/:immatriculation', checkAuth, carController.depositCar);
+router.post('/recover/:immatriculation', checkAuth, carController.recoverCar);
 
 module.exports = router;
