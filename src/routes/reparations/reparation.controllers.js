@@ -6,6 +6,9 @@ const Car = require("../cars/car.model");
 const User = require("../users/user.model");
 
 
+const repairService = require("../../services/reparation-service");
+
+
 
 const findReparationsByUser = async (req, res) => {
 	const user = req.user;
@@ -136,21 +139,6 @@ const findReparationsByCar = async (req, res) => {
 	
 };
 
-const notAffectedReparationList = async (req, res) => {
-	await Reparation.find({ responsableAtelier: null}).exec().then((result) =>{
-		console.log(result);
-
-		res.status(200).json(result);
-	
-
-	}).catch((error) => {
-		console.log(error);
-		res.status(500).json({
-			message: error.toString()
-		  })
-	});
-
-}
 
 const affectReparation = async (req, res) => {
 	const repairId = req.params.repairId;
@@ -173,11 +161,80 @@ const affectReparation = async (req, res) => {
 
 }
 
+const notAffectedReparationList = async (req, res) => {
+	await Reparation.find({ responsableAtelier: null}).exec().then((result) =>{
+		console.log(result);
+
+		res.status(200).json(result);
+	
+
+	}).catch((error) => {
+		console.log(error);
+		res.status(500).json({
+			message: error.toString()
+		  })
+	});
+
+}
+
+const reparationListWithDetails = async (req, res) => {
+	await Reparation.find().exec().then( async (result) =>{
+		console.log(result);
+
+
+		var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
+					//console.log(result1);
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					var avgAvancement = await repairService.getAvgAvancement(result1);
+
+					var retour = {
+						repair: result[i],
+						montantTotal : montantTotal,
+						avgAvancement: avgAvancement,
+						reparationDetail: result1
+					};
+					arrayFinal.push(retour);
+
+					console.log(arrayFinal);
+
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+	
+
+	}).catch((error) => {
+		console.log(error);
+		res.status(500).json({
+			message: error.toString()
+		  })
+	});
+
+}
+
 
 module.exports = {
 	findReparationsByCar,
 	findReparationsByUser,
 	notAffectedReparationList,
-	affectReparation
+	affectReparation,
+	reparationListWithDetails
 	
 };
