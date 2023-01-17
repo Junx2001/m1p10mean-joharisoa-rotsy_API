@@ -229,12 +229,34 @@ const reparationListWithDetails = async (req, res) => {
 
 }
 
+const validateReparation = async (req, res) => {
+	const repairId = req.params.repairId;
+	const respAtelierId = req.user.userId;
+	await Reparation.updateOne({ _id : repairId},{ valide : 1})
+		.then((result) => {
+						  console.log(`Reparation has been validated (Bon de Sortie)`);
+						  res.status(200).json({
+							message: 'Reparation has been validated (Bon de Sortie)',
+							reparation: result
+						  });
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
+						});
+							});
+
+
+}
+
 
 module.exports = {
 	findReparationsByCar,
 	findReparationsByUser,
 	notAffectedReparationList,
 	affectReparation,
-	reparationListWithDetails
+	reparationListWithDetails,
+	validateReparation
 	
 };
