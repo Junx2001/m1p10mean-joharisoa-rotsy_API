@@ -109,7 +109,7 @@ const recoverCar = async (req, res) => {
 		await Reparation.updateOne({ voiture : voiture._id, dateRecup: null}, { dateRecup: Date.now()})
 		.then((result) => {
 						  console.log(`Car has been recovered`);
-						  res.status(201).json({
+						  res.status(200).json({
 							message: 'Car has been recovered',
 							reparation: result
 						  });

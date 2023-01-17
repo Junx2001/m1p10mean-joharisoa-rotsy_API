@@ -136,10 +136,48 @@ const findReparationsByCar = async (req, res) => {
 	
 };
 
+const notAffectedReparationList = async (req, res) => {
+	await Reparation.find({ responsableAtelier: null}).exec().then((result) =>{
+		console.log(result);
 
+		res.status(200).json(result);
+	
+
+	}).catch((error) => {
+		console.log(error);
+		res.status(500).json({
+			message: error.toString()
+		  })
+	});
+
+}
+
+const affectReparation = async (req, res) => {
+	const repairId = req.params.repairId;
+	const respAtelierId = req.user.userId;
+	await Reparation.updateOne({ _id : repairId, responsableAtelier: null},{ responsableAtelier : respAtelierId})
+		.then((result) => {
+						  console.log(`Reparation has been allocated to ${respAtelierId}`);
+						  res.status(200).json({
+							message: 'Reparation has been allocated',
+							reparation: result
+						  });
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
+						});
+							});
+
+
+}
 
 
 module.exports = {
 	findReparationsByCar,
-	findReparationsByUser
+	findReparationsByUser,
+	notAffectedReparationList,
+	affectReparation
+	
 };

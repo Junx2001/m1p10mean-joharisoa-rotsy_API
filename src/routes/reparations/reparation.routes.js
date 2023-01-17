@@ -10,5 +10,6 @@ router.get('/:immatriculation', checkAuth ,reparationController.findReparationsB
 router.get('/', checkAuth ,reparationController.findReparationsByUser);
 
 
+router.post('/allocate/:repairId', checkAuth ,reparationController.affectReparation);
 
 module.exports = router;
