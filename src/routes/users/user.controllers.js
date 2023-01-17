@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const mongoo = require("mongoose");
 
 const User = require("./user.model");
+const mail = require('../../services/mailing/confirm-email'); 
 
 
 
-
-const userRegister = (req, res, next) => {
+const userRegister = async (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -16,6 +16,7 @@ const userRegister = (req, res, next) => {
           message:"Email Exists"
         })
 			} else {
+				//mail.sendEmail(req.body.email,'TOKEN_ACTIVATE_ACCOUNT');
 				bcrypt.hash(req.body.password, 10, (err, hash) => {
 					if (err) {
 						return res.status(500).json({
@@ -26,8 +27,7 @@ const userRegister = (req, res, next) => {
 							_id: new mongoo.Types.ObjectId(),
 							email: req.body.email,
 							password: hash,
-              name: req.body.name,
-              phone_number: req.body.phone_number
+              				name: req.body.name,
 						});
 						user
 							.save()
@@ -35,13 +35,14 @@ const userRegister = (req, res, next) => {
 								await result
 									.save()
 									.then((result1) => {
-                      console.log(`User created ${result}`)
+                      console.log(`User created ${result}, please verify your email to activate it`)
                       res.status(201).json({
                         userDetails: {
                           userId: result._id,
                           email: result.email,
                           name: result.name,
-                          phone_number: result.phone_number,
+                          role: result.role,
+						  active: result.active
                         },
                       })
 									})
@@ -81,6 +82,11 @@ const userLogin = (req, res, next) => {
 					message: "Auth failed: Email not found probably",
 				});
 			}
+			if (user[0].active != 1) {
+				return res.status(401).json({
+					message: "Auth failed: Please Verify your email",
+				});
+			}
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
 				if (err) {
           console.log(err)
@@ -94,7 +100,7 @@ const userLogin = (req, res, next) => {
               userId: user[0]._id,
 							email: user[0].email,
 							name: user[0].name,
-							phone_number: user[0].phone_number,
+							role: user[0].role,
 						},
 						process.env.jwtSecret,
 						{
@@ -108,7 +114,7 @@ const userLogin = (req, res, next) => {
 							userId: user[0]._id,
 							name: user[0].name,
 							email: user[0].email,
-							phone_number: user[0].phone_number,
+							role: user[0].role,
 						},
 						token: token,
 					});
@@ -140,8 +146,36 @@ const getMe = async (req, res) => {
 	}
 };
 
+const atelier = async (req, res) => {
+	const userId = req.user.userId;
+	const user = await User.findById(userId);
+	if (user) {
+		res.status(200).json({
+			message: "Welcome to the Atelier",
+			user,
+		});
+	} else {
+		res.status(400).json({
+			message: "Bad request",
+		});
+	}
+};
+
+const essaiEmail = async (req, res) => {
+	try {
+		await mail.sendEmail('ratsirarsonj@gmail.com','Essai-Token');
+		return res.status(200).send({message: 'Email de Bienvenue Envoyé'});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({message: 'Internal server error'});
+	}
+
+};
+
 module.exports = {
   userLogin,
   userRegister,
-	getMe,
+  getMe,
+  atelier,
+  essaiEmail
 };

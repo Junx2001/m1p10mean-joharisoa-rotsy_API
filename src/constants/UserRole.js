@@ -1,7 +1,7 @@
 class UserRole {
-    static ROLE_USER_SHOP = 'ROLE_USER_SHOP';
-    static ROLE_USER_MEMBER = 'ROLE_USER_MEMBER';
-    static ROLE_SUPER_USER_SHOP = 'ROLE_SUPER_USER_SHOP';
+    static ROLE_USER_CLIENT = 'ROLE_USER_CLIENT';
+    static ROLE_USER_ATELIER = 'ROLE_USER_ATELIER';
+    static ROLE_USER_FINANCE = 'ROLE_USER_FINANCE';
 }
 
 module.exports = UserRole;
