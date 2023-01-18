@@ -3,6 +3,7 @@ require('dotenv').config();
 
 var express = require('express');
 var logger = require('morgan');
+const cors = require('cors');
 //const mongoose = require('./src/database/DatabaseManager').mongo;
 const bodyParser = require('body-parser');
 
@@ -12,6 +13,17 @@ var reparationsRouter = require('./src/routes/reparations/reparation.routes');
 var paymentsRouter = require('./src/routes/payments/payment.routes');
 
 var app = express();
+
+
+app.use(cors());
+
+// app.use(function(req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
