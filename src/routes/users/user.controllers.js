@@ -73,6 +73,7 @@ const userRegister = async (req, res, next) => {
 
 
 const userLogin = (req, res, next) => {
+	console.log(req.body)
 	User.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
