@@ -189,6 +189,37 @@ const carDepositListByUser = async (req, res) => {
 		});
 };
 
+const searchCar = async (req, res) => {
+	var conditions = {};
+	if(req.query.immatriculation){
+		conditions.immatriculation = req.query.immatriculation;
+	}
+	if(req.query.marque){
+		conditions.marque = req.query.marque;
+	}
+	if(req.query.modele){
+		conditions.modele = req.query.modele;
+	}
+	if(req.query.dateDepot){
+		conditions.dateDepot = req.query.dateDepot;
+	}
+
+
+	await Car.find(conditions).exec()
+		.then(async (result) => {
+			
+			res.status(200).json(result);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 
 
 module.exports = {
@@ -196,5 +227,6 @@ module.exports = {
 	depositCar,
 	recoverCar,
 	carListByUser,
-	carDepositListByUser
+	carDepositListByUser,
+	searchCar
 };
