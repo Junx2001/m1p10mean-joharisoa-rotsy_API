@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/', checkAuth ,reparationController.findReparationsByUser);
 router.get('/notAffected', checkAuth ,reparationController.notAffectedReparationList);
 router.get('/details', checkAuth ,reparationController.reparationListWithDetails);
+router.get('/unpaid', checkAuth ,reparationController.unpaidReparationByUser);
 
 
 router.get('/:immatriculation', checkAuth ,reparationController.findReparationsByCar);

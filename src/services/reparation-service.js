@@ -1,3 +1,6 @@
+const Payment = require("../routes/payments/payment.model");
+
+
 const getMontantTotalReparation = async (repairDetailsArray) => {
     var total = 0;
     for(let i = 0;i<repairDetailsArray.length;i++)
@@ -18,7 +21,12 @@ const getAvgAvancement = async (repairDetailsArray) => {
         total += repairDetail.avancement;
     }
 
-    return total/repairDetailsArray.length;
+    if(repairDetailsArray.length > 0){
+        return total/repairDetailsArray.length;
+    }
+
+    return total;
+    
 }
 
 const getDurationTotal = async (repairDetailsArray) => {
@@ -34,9 +42,26 @@ const getDurationTotal = async (repairDetailsArray) => {
     return total;
 }
 
+const getMontantPaidByReparation = async (reparationObject) => {
+    var total = 0;
+    const paym = await Payment.find({ reparation : reparationObject._id});
+
+    if(paym.length == 0)
+    {
+        return 0;
+    }
+
+    for(let i = 0;i<paym.length;i++)
+    {
+        total += paym[i].montant;
+    }
+    return total;
+}
+
 
 module.exports = {
     getMontantTotalReparation,
     getAvgAvancement,
-    getDurationTotal
+    getDurationTotal,
+    getMontantPaidByReparation
 };

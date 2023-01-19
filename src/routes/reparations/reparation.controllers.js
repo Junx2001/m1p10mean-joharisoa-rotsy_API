@@ -249,14 +249,15 @@ const notAffectedReparationList = async (req, res) => {
 
 const reparationListWithDetails = async (req, res) => {
 	await Reparation.find().exec().then( async (result) =>{
-		console.log(result);
-
+		//console.log(result);
 
 		var arrayFinal = [];
 
 			for(let i = 0;i<result.length;i++)
 			{
 			
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
+				
 				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
 					//console.log(result1);
 
@@ -266,12 +267,13 @@ const reparationListWithDetails = async (req, res) => {
 					var retour = {
 						repair: result[i],
 						montantTotal : montantTotal,
+						restToPay: montantTotal-paidReparation,
 						avgAvancement: avgAvancement,
 						reparationDetail: result1
 					};
 					arrayFinal.push(retour);
 
-					console.log(arrayFinal);
+					//console.log(arrayFinal);
 
 
 
@@ -369,6 +371,74 @@ const avgReparationDuration = async (req, res) => {
 
 }
 
+const unpaidReparationByUser = async (req, res) => {
+	const user = req.user;
+
+	await Reparation.find().populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then( async (result) => {
+
+			result = result.filter( function(res)
+				{
+					if(res.voiture.client._id == user.userId){
+						return true;
+					}
+					return false;
+				}
+			);
+			//console.log(result);
+
+			var arrayFinal = [];
+
+			
+
+			for(let i = 0;i<result.length;i++)
+			{
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then( async (result1) =>{
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					//console.log(result1);
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1
+					};
+					if(paidReparation < montantTotal || result1.length == 0){
+						arrayFinal.push(retour);
+					}
+					
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
 module.exports = {
 	findReparationsByCar,
 	findReparationsByUser,
@@ -377,6 +447,7 @@ module.exports = {
 	reparationListWithDetails,
 	validateReparation,
 	avgReparationDuration,
-	findActualReparationsByCar
+	findActualReparationsByCar,
+	unpaidReparationByUser
 	
 };

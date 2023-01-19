@@ -14,7 +14,15 @@ const addCar = async (req, res) => {
 		modele: req.body.modele,
   		marque: req.body.marque,
 	});
-	car
+
+	const voiture = await Car.find({ immatriculation : req.body.immatriculation});
+	if(voiture.length > 0){
+		res.status(409).json({
+			message:"Car already added in "
+		  });
+	}
+	else{
+		car
 		.save()
 		.then(async (result) => {
 			await result
@@ -36,6 +44,8 @@ const addCar = async (req, res) => {
                   message: err.toString()
                 })
 							});
+	}
+	
 };
 
 const depositCar = async (req, res) => {
@@ -190,6 +200,8 @@ const carDepositListByUser = async (req, res) => {
 };
 
 const searchCar = async (req, res) => {
+
+	var arrayFinal = [];
 	var conditions = {};
 	if(req.query.immatriculation){
 		conditions.immatriculation = req.query.immatriculation;
@@ -207,8 +219,19 @@ const searchCar = async (req, res) => {
 
 	await Car.find(conditions).exec()
 		.then(async (result) => {
+
+			for(let i = 0;i < result.length;i++)
+			{
+				var carState = await carService.getCarState(result[i]);
+				var retour = {
+					car: result[i],
+					state: carState,
+				};
+				arrayFinal.push(retour);
+
+			}
 			
-			res.status(200).json(result);
+			res.status(200).json(arrayFinal);
 
 
 		})
