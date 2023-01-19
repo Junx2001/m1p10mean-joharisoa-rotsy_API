@@ -140,6 +140,76 @@ const findReparationsByCar = async (req, res) => {
 };
 
 
+const findActualReparationsByCar = async (req, res) => {
+	const immatr = req.params.immatriculation;
+	const voiture = await Car.findOne({ immatriculation : immatr});
+	const client = await User.findOne({ _id: voiture.client });
+
+	if(req.user.email != client.email)
+	{
+		return res.status(401).json({
+			message: 'You can only manage your own cars'
+		  });
+	}
+
+	await Reparation.find({ dateRecup: null}).populate({
+		path: 'voiture',
+	  }).exec()
+		.then( async (result) => {
+
+			result = result.filter( function(res)
+				{
+					if(res.voiture.immatriculation == immatr){
+						return true;
+					}
+					return false;
+				}
+			);
+			//console.log(result);
+
+			var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+					//console.log(result1);
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1
+					};
+					arrayFinal.push(retour);
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
+
+
 const affectReparation = async (req, res) => {
 	const repairId = req.params.repairId;
 	const respAtelierId = req.user.userId;
@@ -250,6 +320,54 @@ const validateReparation = async (req, res) => {
 
 }
 
+// TOTAL IN DAYS
+const avgReparationDuration = async (req, res) => {
+
+	const voiture = await Car.findOne({ immatriculation : req.params.immatriculation});
+
+	await Reparation.find({ voiture: voiture._id }).exec().then( async (result) =>{
+
+		var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
+					//console.log(result1);
+
+					var durationTotal = await repairService.getDurationTotal(result1);
+
+					var retour = {
+						repair: result[i],
+						avgDuration : durationTotal/result1.length,
+	
+					};
+					arrayFinal.push(retour);
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+			res.status(200).json({
+				arrayFinal
+			  });
+
+	
+
+	}).catch((error) => {
+		console.log(error);
+		res.status(500).json({
+			message: error.toString()
+		  })
+	});
+
+}
 
 module.exports = {
 	findReparationsByCar,
@@ -257,6 +375,8 @@ module.exports = {
 	notAffectedReparationList,
 	affectReparation,
 	reparationListWithDetails,
-	validateReparation
+	validateReparation,
+	avgReparationDuration,
+	findActualReparationsByCar
 	
 };

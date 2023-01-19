@@ -13,6 +13,8 @@ router.get('/details', checkAuth ,reparationController.reparationListWithDetails
 
 
 router.get('/:immatriculation', checkAuth ,reparationController.findReparationsByCar);
+router.get('/actual/:immatriculation', checkAuth ,reparationController.findActualReparationsByCar);
+router.get('/avgRepair/:immatriculation', checkAuth ,reparationController.avgReparationDuration);
 
 router.post('/allocate/:repairId', checkAuth ,reparationController.affectReparation);
 router.post('/validate/:repairId', checkAuth ,reparationController.validateReparation);
