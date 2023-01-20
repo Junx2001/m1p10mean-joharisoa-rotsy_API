@@ -71,6 +71,85 @@ const findReparationsByUser = async (req, res) => {
 };
 
 
+const findCurrentReparationsByUser = async (req, res) => {
+	const user = req.user;
+
+	await Reparation.find().populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then( async (result) => {
+
+			result = result.filter( function(res)
+				{
+					if(res.voiture.client._id == user.userId){
+						return true;
+					}
+					return false;
+				}
+			);
+			//console.log(result);
+
+			var arrayFinal = [];
+
+			for(let i = 0;i<result.length;i++)
+			{
+
+				if(retour[i].dateRecup == null)
+				{
+					continue;
+				}
+
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then( async (result1) =>{
+
+					//console.log(result1);
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					var avgAvancement = await repairService.getAvgAvancement(result1);
+
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1,
+						avgAvancement: avgAvancement,
+						montantTotal : montantTotal,
+						totalPaid: paidReparation,
+						restToPay: montantTotal-paidReparation
+					};
+
+					arrayFinal.push(retour);
+					
+						
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
+
 const findReparationsByCar = async (req, res) => {
 	const immatr = req.params.immatriculation;
 	const voiture = await Car.findOne({ immatriculation : immatr});
@@ -274,6 +353,7 @@ const reparationListWithDetails = async (req, res) => {
 					var retour = {
 						repair: result[i],
 						montantTotal : montantTotal,
+						totalPaid: paidReparation,
 						restToPay: montantTotal-paidReparation,
 						avgAvancement: avgAvancement,
 						reparationDetail: result1
@@ -455,6 +535,7 @@ module.exports = {
 	validateReparation,
 	avgReparationDuration,
 	findActualReparationsByCar,
-	unpaidReparationByUser
+	unpaidReparationByUser,
+	findCurrentReparationsByUser
 	
 };
