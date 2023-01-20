@@ -5,6 +5,8 @@ const Reparation = require("../reparations/reparation.model");
 
 const carService = require("../../services/car-services");
 
+const repairService = require("../../services/reparation-service");
+
 const addCar = async (req, res) => {
 	
 	const car = new Car({
@@ -244,6 +246,44 @@ const searchCar = async (req, res) => {
 };
 
 
+const recoverableCarByUser = async (req, res) =>{
+	const user = req.user;
+	var arrayFinal = [];
+
+	await Car.find({ client : user.userId}).exec()
+		.then(async (result) => {
+
+			for(let i = 0;i < result.length;i++)
+			{
+				await Reparation.findOne({ voiture: result[i]._id, valide:1, dateRecup:null }).exec().then( async (result1) =>{
+
+					if(result1 != null){
+						arrayFinal.push(result[i]);
+					}
+				
+					
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+
+	
+			}
+			
+			res.status(200).json(arrayFinal);
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+}
+
+
 
 module.exports = {
 	addCar,
@@ -251,5 +291,6 @@ module.exports = {
 	recoverCar,
 	carListByUser,
 	carDepositListByUser,
-	searchCar
+	searchCar,
+	recoverableCarByUser
 };

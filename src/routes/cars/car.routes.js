@@ -14,6 +14,8 @@ router.post('/recover/:immatriculation', checkAuth, carController.recoverCar);
 router.get('/', checkAuth, carController.carListByUser);
 router.get('/deposit', checkAuth, carController.carDepositListByUser);
 router.get('/search', checkAuth, carController.searchCar);
+router.get('/recoverable', checkAuth, carController.recoverableCarByUser);
+
 
 
 module.exports = router;

@@ -171,12 +171,19 @@ const findActualReparationsByCar = async (req, res) => {
 
 			for(let i = 0;i<result.length;i++)
 			{
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
 			
-				await ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then( async (result1) =>{
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					var avgAvancement = await repairService.getAvgAvancement(result1);
 					//console.log(result1);
 
 					var retour = {
 						repair: result[i],
+						montantTotal : montantTotal,
+						restToPay: montantTotal-paidReparation,
+						avgAvancement: avgAvancement,
 						reparationDetail: result1
 					};
 					arrayFinal.push(retour);
