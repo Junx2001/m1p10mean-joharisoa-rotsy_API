@@ -267,6 +267,7 @@ const reparationListWithDetails = async (req, res) => {
 					var retour = {
 						repair: result[i],
 						montantTotal : montantTotal,
+						totalPaid: paidReparation,
 						restToPay: montantTotal-paidReparation,
 						avgAvancement: avgAvancement,
 						reparationDetail: result1
