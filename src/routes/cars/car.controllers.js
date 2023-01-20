@@ -214,10 +214,6 @@ const searchCar = async (req, res) => {
 	if(req.query.modele){
 		conditions.modele = req.query.modele;
 	}
-	if(req.query.dateDepot){
-		conditions.dateDepot = req.query.dateDepot;
-	}
-
 
 	await Car.find(conditions).exec()
 		.then(async (result) => {
