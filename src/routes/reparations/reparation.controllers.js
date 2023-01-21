@@ -405,34 +405,71 @@ const notAffectedReparationList = async (req, res) => {
 
 
 const affectedReparationList = async (req, res) => {
+	var conditions = {responsableAtelier: { $ne: null }, dateRecup: null};
 
 	var arrayFinal = [];
-	await Reparation.find({ responsableAtelier: { $ne: null }, dateRecup: null }).exec().then(async (result) =>{
+	await Reparation.find(conditions).populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec().then(async (result) =>{
 		console.log(result);
 
-
-		
-		for(let i=0;i<result.length;i++)
-		{
-			
-			const voiture = await Car.findOne({ _id: result[i].voiture});
-			const client = await User.findOne({ _id: voiture.client});
-
-
-			const retour = {
-				repair: result[i],
-				voiture: voiture,
-				client: client
-			};
-
-			arrayFinal.push(retour);
-
-
+		if(req.query.immatriculation){
+			result = result.filter( function(res)
+			{
+				if(res.voiture.immatriculation == req.query.immatriculation){
+					return true;
+				}
+				return false;
+			}
+			);
 		}
+
+		if(req.query.marque){
+			result = result.filter( function(res)
+			{
+				if(res.voiture.marque == req.query.marque){
+					return true;
+				}
+				return false;
+			}
+			);
+		}
+
+		if(req.query.modele){
+			result = result.filter( function(res)
+			{
+				if(res.voiture.modele == req.query.modele){
+					return true;
+				}
+				return false;
+			}
+			);
+		}
+		if(req.query.client){
+			result = result.filter( function(res)
+			{
+				if(res.voiture.client.name == req.query.client){
+					return true;
+				}
+				return false;
+			}
+			);
+		}
+		if(req.query.dateDepot){
+			result = result.filter( function(res)
+			{
+				if(res.dateDepot == req.query.dateDepot){
+					return true;
+				}
+				return false;
+			}
+			);
+		}
+
 		
 
-
-		res.status(200).json(arrayFinal);
+		res.status(200).json(result);
 	
 
 	}).catch((error) => {

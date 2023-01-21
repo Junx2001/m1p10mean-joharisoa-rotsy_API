@@ -206,13 +206,13 @@ const searchCar = async (req, res) => {
 	var arrayFinal = [];
 	var conditions = {};
 	if(req.query.immatriculation){
-		conditions.immatriculation = req.query.immatriculation;
+		conditions.immatriculation = { $regex: '.*' + req.query.immatriculation + '.*', $options: 'i' };
 	}
 	if(req.query.marque){
-		conditions.marque = req.query.marque;
+		conditions.marque = { $regex: '.*' + req.query.marque + '.*', $options: 'i' };
 	}
 	if(req.query.modele){
-		conditions.modele = req.query.modele;
+		conditions.modele = { $regex: '.*' + req.query.modele + '.*', $options: 'i' };
 	}
 
 	await Car.find(conditions).exec()
