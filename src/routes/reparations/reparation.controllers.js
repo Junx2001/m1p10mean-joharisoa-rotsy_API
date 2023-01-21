@@ -407,7 +407,7 @@ const notAffectedReparationList = async (req, res) => {
 const affectedReparationList = async (req, res) => {
 
 	var arrayFinal = [];
-	await Reparation.find({ responsableAtelier: { $ne: null } }).exec().then(async (result) =>{
+	await Reparation.find({ responsableAtelier: { $ne: null }, dateRecup: null }).exec().then(async (result) =>{
 		console.log(result);
 
 
