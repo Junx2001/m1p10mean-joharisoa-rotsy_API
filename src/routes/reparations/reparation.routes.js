@@ -17,7 +17,7 @@ router.get('/current', checkAuth ,reparationController.findCurrentReparationsByU
 
 
 
-router.get('/:immatriculation', checkAuth ,reparationController.findReparationsByCar);
+router.get('/findByCar/:immatriculation', checkAuth ,reparationController.findReparationsByCar);
 router.get('/actual/:immatriculation', checkAuth ,reparationController.findActualReparationsByCar);
 router.get('/avgRepair/:immatriculation', checkAuth ,reparationController.avgReparationDuration);
 
