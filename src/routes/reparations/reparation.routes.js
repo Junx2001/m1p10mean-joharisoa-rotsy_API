@@ -8,12 +8,12 @@ const router = express.Router();
 
 
 router.get('/', checkAuth ,reparationController.findReparationsByUser);
-router.get('/:reparationId', checkAuth, reparationController.findReparation);
 router.get('/notAffected', checkAuth ,reparationController.notAffectedReparationList);
 router.get('/affected', checkAuth ,reparationController.affectedReparationList);
 router.get('/details', checkAuth ,reparationController.reparationListWithDetails);
 router.get('/unpaid', checkAuth ,reparationController.unpaidReparationByUser);
 router.get('/current', checkAuth ,reparationController.findCurrentReparationsByUser);
+router.get('/:reparationId', checkAuth, reparationController.findReparation);
 
 
 
