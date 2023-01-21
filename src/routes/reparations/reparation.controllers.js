@@ -9,6 +9,50 @@ const User = require("../users/user.model");
 const repairService = require("../../services/reparation-service");
 
 
+const findReparation = async (req, res) => {
+
+	await Reparation.findOne({ _id: req.params.reparationId}).populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then( async (result) => {
+
+			var retour = {};
+			
+				await ReparationDetails.find({ reparation: result._id}).exec().then(async (result1) =>{
+					//console.log(result1);
+
+					retour = {
+						repair: result,
+						reparationDetail: result1
+					};
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			
+
+			res.status(200).json(
+				retour
+			  );
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
+
+
 
 const findReparationsByUser = async (req, res) => {
 	const user = req.user;
@@ -358,6 +402,48 @@ const notAffectedReparationList = async (req, res) => {
 
 }
 
+
+
+const affectedReparationList = async (req, res) => {
+
+	var arrayFinal = [];
+	await Reparation.find({ responsableAtelier: { $ne: null } }).exec().then(async (result) =>{
+		console.log(result);
+
+
+		
+		for(let i=0;i<result.length;i++)
+		{
+			
+			const voiture = await Car.findOne({ _id: result[i].voiture});
+			const client = await User.findOne({ _id: voiture.client});
+
+
+			const retour = {
+				repair: result[i],
+				voiture: voiture,
+				client: client
+			};
+
+			arrayFinal.push(retour);
+
+
+		}
+		
+
+
+		res.status(200).json(arrayFinal);
+	
+
+	}).catch((error) => {
+		console.log(error);
+		res.status(500).json({
+			message: error.toString()
+		  })
+	});
+
+}
+
 const reparationListWithDetails = async (req, res) => {
 	await Reparation.find().exec().then( async (result) =>{
 		//console.log(result);
@@ -552,6 +638,7 @@ const unpaidReparationByUser = async (req, res) => {
 };
 
 module.exports = {
+	findReparation,
 	findReparationsByCar,
 	findReparationsByUser,
 	notAffectedReparationList,
@@ -561,6 +648,7 @@ module.exports = {
 	avgReparationDuration,
 	findActualReparationsByCar,
 	unpaidReparationByUser,
-	findCurrentReparationsByUser
+	findCurrentReparationsByUser,
+	affectedReparationList
 	
 };

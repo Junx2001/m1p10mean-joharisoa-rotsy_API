@@ -11,6 +11,7 @@ var usersRouter = require('./src/routes/users/user.routes');
 var carsRouter = require('./src/routes/cars/car.routes');
 var reparationsRouter = require('./src/routes/reparations/reparation.routes');
 var paymentsRouter = require('./src/routes/payments/payment.routes');
+var reparationDetailsRouter = require('./src/routes/reparationDetails/reparationDetails.routes');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/users', usersRouter);
 app.use('/cars', carsRouter);
 app.use('/reparations', reparationsRouter);
 app.use('/payments', paymentsRouter);
+app.use('/reparationDetails', reparationDetailsRouter);
 
 
 // catch 404 and forward to error handler
