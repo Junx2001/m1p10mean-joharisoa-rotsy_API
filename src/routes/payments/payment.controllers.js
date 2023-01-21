@@ -59,6 +59,35 @@ const validatePayment = async (req, res) => {
 
 }
 
+const statsChiffreAffaireParMois = async (req, res) => {
+	const annee = parseInt(req.params.annee);
+	Payment.aggregate(
+		[
+			{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}}},
+  			{$match: {year: annee}},
+			{$group: {
+			  _id: { $month: '$date'},
+			  totalCA: {
+				$sum: "$montant"
+			  }
+			}}
+		  
+		],
+	
+		function(err, result) {
+		  if (err) {
+			res.send(err);
+		  } else {
+			res.json(result);
+		  }
+		}
+	  );
+
+}
+
+
+
+
 const findAllPayments = async (req, res) => {
 
 	await Payment.find().exec()
@@ -78,9 +107,39 @@ const findAllPayments = async (req, res) => {
 }
 
 
+const statsChiffreAffaireParJour = async (req, res) => {
+	const annee = parseInt(req.params.annee);
+	const mois = parseInt(req.params.mois)
+	Payment.aggregate(
+		[
+			{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}, month: {$month: '$date'}}},
+  			{$match: {year: annee, month: mois}},
+			{$group: {
+			  _id: { $dateToString:{format: "%Y-%m-%d", date: "$date"}},
+			  totalCA: {
+				$sum: "$montant"
+			  }
+			}}
+		  
+		],
+	
+		function(err, result) {
+		  if (err) {
+			res.send(err);
+		  } else {
+			res.json(result);
+		  }
+		}
+	  );
+
+}
+
+
 module.exports = {
 	addPayment,
 	validatePayment,
-	findAllPayments
+	findAllPayments,
+	statsChiffreAffaireParMois,
+	statsChiffreAffaireParJour
 
 };
