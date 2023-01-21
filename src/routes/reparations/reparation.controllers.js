@@ -319,10 +319,34 @@ const affectReparation = async (req, res) => {
 }
 
 const notAffectedReparationList = async (req, res) => {
-	await Reparation.find({ responsableAtelier: null}).exec().then((result) =>{
+
+	var arrayFinal = [];
+	await Reparation.find({ responsableAtelier: null}).exec().then(async (result) =>{
 		console.log(result);
 
-		res.status(200).json(result);
+
+		
+		for(let i=0;i<result.length;i++)
+		{
+			
+			const voiture = await Car.findOne({ _id: result[i].voiture});
+			const client = await User.findOne({ _id: voiture.client});
+
+
+			const retour = {
+				repair: result[i],
+				voiture: voiture,
+				client: client
+			};
+
+			arrayFinal.push(retour);
+
+
+		}
+		
+
+
+		res.status(200).json(arrayFinal);
 	
 
 	}).catch((error) => {
