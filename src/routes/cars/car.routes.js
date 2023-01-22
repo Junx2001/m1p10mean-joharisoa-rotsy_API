@@ -7,6 +7,7 @@ const router = express.Router();
 
 
 router.post('/add', checkAuth, carController.addCar);
+router.get('/all', checkAuth, carController.allCars);
 
 router.post('/deposit/:immatriculation', checkAuth, carController.depositCar);
 router.post('/recover/:immatriculation', checkAuth, carController.recoverCar);

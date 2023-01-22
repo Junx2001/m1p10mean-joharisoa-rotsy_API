@@ -568,7 +568,7 @@ const avgReparationDuration = async (req, res) => {
 
 			for(let i = 0;i<result.length;i++)
 			{
-				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
+				await ReparationDetails.find({ reparation: result[i]._id, dateDebut: { $ne: null}, dateFin: { $ne: null }}).exec().then(async (result1) =>{
 					//console.log(result1);
 
 					var durationTotal = await repairService.getDurationTotal(result1);

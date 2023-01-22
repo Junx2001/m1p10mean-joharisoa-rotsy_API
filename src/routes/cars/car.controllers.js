@@ -241,6 +241,23 @@ const searchCar = async (req, res) => {
 		});
 };
 
+const allCars = async (req, res) => {
+
+	await Car.find().exec()
+		.then(async (result) => {
+			
+			res.status(200).json(result);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 
 const recoverableCarByUser = async (req, res) =>{
 	const user = req.user;
@@ -288,5 +305,6 @@ module.exports = {
 	carListByUser,
 	carDepositListByUser,
 	searchCar,
-	recoverableCarByUser
+	recoverableCarByUser,
+	allCars
 };
