@@ -7,8 +7,11 @@ const router = express.Router();
 
 
 router.post('/add', checkAuth, reparationDetailController.addReparationDetails);
+router.get('/:repairDetailsId', checkAuth, reparationDetailController.findReparationDetails);
 
+router.post('/update/:repairDetailsId', checkAuth, reparationDetailController.updateReparationDetails);
 
+router.post('/delete/:repairDetailsId', checkAuth, reparationDetailController.deleteReparationDetails);
 
 
 module.exports = router;
