@@ -59,6 +59,24 @@ const validatePayment = async (req, res) => {
 
 }
 
+const findAllPayments = async (req, res) => {
+
+	await Payment.find().exec()
+		.then((result) => {
+
+			console.log(result);
+			res.status(200).json(result);
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+
+}
+
 const statsChiffreAffaireParMois = async (req, res) => {
 	const annee = parseInt(req.params.annee);
 	Payment.aggregate(
@@ -84,28 +102,6 @@ const statsChiffreAffaireParMois = async (req, res) => {
 	  );
 
 }
-
-
-
-
-const findAllPayments = async (req, res) => {
-
-	await Payment.find().exec()
-		.then((result) => {
-
-			console.log(result);
-			res.status(200).json(result);
-
-		})
-		.catch((error) => {
-			console.log(error);
-			res.status(500).json({
-				message: error.toString()
-			  })
-		});
-
-}
-
 
 const statsChiffreAffaireParJour = async (req, res) => {
 	const annee = parseInt(req.params.annee);
