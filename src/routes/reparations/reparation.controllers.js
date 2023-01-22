@@ -606,7 +606,7 @@ const avgReparationDuration = async (req, res) => {
 
 }
 
-const unpaidReparationByUser = async (req, res) => {
+const unpaidReparationsByUser = async (req, res) => {
 	const user = req.user;
 
 	await Reparation.find().populate({
@@ -674,6 +674,131 @@ const unpaidReparationByUser = async (req, res) => {
 	
 };
 
+
+const unpaidReparations = async (req, res) => {
+
+	await Reparation.find().populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then( async (result) => {
+
+
+			var arrayFinal = [];
+
+			
+
+			for(let i = 0;i<result.length;i++)
+			{
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
+			
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then( async (result1) =>{
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					//console.log(result1);
+
+					var retour = {
+						repair: result[i],
+						reparationDetail: result1,
+						montantTotal: montantTotal,
+						totalPaid: paidReparation,
+						restToPay: montantTotal - paidReparation 
+						
+					};
+					if(paidReparation < montantTotal || result1.length == 0){
+						arrayFinal.push(retour);
+					}
+					
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			}
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
+
+const unpaidReparationById = async (req, res) => {
+
+	await Reparation.findOne({ _id: req.params.repairId }).populate({
+		path: 'voiture',
+		populate: { path: 'client' }
+	  }).exec()
+		.then( async (result) => {
+
+
+			var arrayFinal = [];
+
+			
+
+				var paidReparation = await repairService.getMontantPaidByReparation(result);
+			
+				await ReparationDetails.find({ reparation: result._id}).exec().then( async (result1) =>{
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					//console.log(result1);
+
+					var retour = {
+						repair: result,
+						reparationDetail: result1,
+						montantTotal: montantTotal,
+						totalPaid: paidReparation,
+						restToPay: montantTotal - paidReparation 
+						
+					};
+					if(paidReparation < montantTotal || result1.length == 0){
+						arrayFinal.push(retour);
+					}
+					
+
+					console.log(arrayFinal);
+
+
+				}).catch((error) => {
+					console.log(error);
+					res.status(500).json({
+						message: error.toString()
+					  })
+				});
+			
+			
+
+			res.status(200).json({
+				arrayFinal
+			  });
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+	
+};
+
+
 module.exports = {
 	findReparation,
 	findReparationsByCar,
@@ -684,8 +809,11 @@ module.exports = {
 	validateReparation,
 	avgReparationDuration,
 	findActualReparationsByCar,
-	unpaidReparationByUser,
+	unpaidReparationsByUser,
 	findCurrentReparationsByUser,
-	affectedReparationList
+	affectedReparationList,
+	unpaidReparations,
+	unpaidReparationById
+
 	
 };

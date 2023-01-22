@@ -11,7 +11,9 @@ router.get('/', checkAuth ,reparationController.findReparationsByUser);
 router.get('/notAffected', checkAuth ,reparationController.notAffectedReparationList);
 router.get('/affected', checkAuth ,reparationController.affectedReparationList);
 router.get('/details', checkAuth ,reparationController.reparationListWithDetails);
-router.get('/unpaid', checkAuth ,reparationController.unpaidReparationByUser);
+router.get('/unpaidByUser', checkAuth ,reparationController.unpaidReparationsByUser);
+router.get('/unpaid', checkAuth ,reparationController.unpaidReparations);
+router.get('/unpaidById/:repairId', checkAuth ,reparationController.unpaidReparationById);
 router.get('/current', checkAuth ,reparationController.findCurrentReparationsByUser);
 router.get('/:reparationId', checkAuth, reparationController.findReparation);
 
