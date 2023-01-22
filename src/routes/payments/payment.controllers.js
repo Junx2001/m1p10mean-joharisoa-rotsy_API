@@ -1,6 +1,7 @@
 const mongoo = require("mongoose");
 
 const Payment = require("./payment.model");
+const Depense = require("../depenses/depenses.model");
 
 const addPayment = async (req, res) => {
 
@@ -77,10 +78,126 @@ const findAllPayments = async (req, res) => {
 
 }
 
+const statsChiffreAffaireParMois = async (req, res) => {
+	const annee = parseInt(req.params.annee);
+	Payment.aggregate(
+		[
+			{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}}},
+  			{$match: {year: annee}},
+			{$group: {
+			  _id: { $month: '$date'},
+			  totalCA: {
+				$sum: "$montant"
+			  }
+			}}
+		  
+		],
+	
+		function(err, result) {
+		  if (err) {
+			res.send(err);
+		  } else {
+			res.json(result);
+		  }
+		}
+	  );
+
+}
+
+const statsChiffreAffaireParJour = async (req, res) => {
+	const annee = parseInt(req.params.annee);
+	const mois = parseInt(req.params.mois)
+	Payment.aggregate(
+		[
+			{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}, month: {$month: '$date'}}},
+  			{$match: {year: annee, month: mois}},
+			{$group: {
+			  _id: { $dateToString:{format: "%Y-%m-%d", date: "$date"}},
+			  totalCA: {
+				$sum: "$montant"
+			  }
+			}}
+		  
+		],
+	
+		function(err, result) {
+		  if (err) {
+			res.send(err);
+		  } else {
+			res.json(result);
+		  }
+		}
+	  );
+
+}
+
+
+const statsBeneficeParMois = async (req, res) => {
+	const annee = parseInt(req.params.annee);
+	try{
+		const chiffreAffaires = await Payment.aggregate(
+			[
+				{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}}},
+				  {$match: {year: annee}},
+				{$group: {
+				  _id: { $month: '$date'},
+				  total: {
+					$sum: "$montant"
+				  }
+				}}
+			  
+			],
+		  );
+
+		const depenses = await Depense.aggregate(
+			[
+				{$project: {date: "$date",montant: "$montant", year: {$year: '$date'}}},
+				  {$match: {year: annee}},
+				{$group: {
+				  _id: { $month: '$date'},
+				  total: {
+					$sum: "$montant"
+				  }
+				}}
+			  
+			],
+		  );
+		for (const dep of depenses) {
+			 dep.total = -dep.total;
+		}
+
+		Array.prototype.push.apply(chiffreAffaires,depenses); 
+
+		var result = [];
+		chiffreAffaires.reduce(function(res, value) {
+		if (!res[value._id]) {
+			res[value._id] = { _id: value._id, total: 0 };
+			result.push(res[value._id])
+		}
+		res[value._id].total += value.total;
+		return res;
+		}, {});
+
+
+		console.log(result);
+		res.status(200).send(result);
+
+
+
+	}
+	catch (err) {
+		res.status(400).send({ error: err });
+	}
+	
+
+}
 
 module.exports = {
 	addPayment,
 	validatePayment,
-	findAllPayments
+	findAllPayments,
+	statsChiffreAffaireParMois,
+	statsChiffreAffaireParJour,
+	statsBeneficeParMois
 
 };
