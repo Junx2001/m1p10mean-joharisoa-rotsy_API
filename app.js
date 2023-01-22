@@ -3,28 +3,35 @@ require('dotenv').config();
 
 var express = require('express');
 var logger = require('morgan');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const cors = require('cors');
+//const mongoose = require('./src/database/DatabaseManager').mongo;
+const bodyParser = require('body-parser');
 
 var usersRouter = require('./src/routes/users/user.routes');
-
+var carsRouter = require('./src/routes/cars/car.routes');
+var reparationsRouter = require('./src/routes/reparations/reparation.routes');
+var paymentsRouter = require('./src/routes/payments/payment.routes');
+var reparationDetailsRouter = require('./src/routes/reparationDetails/reparationDetails.routes');
+var depensesRouter = require('./src/routes/depenses/depenses.routes');
 
 var app = express();
+
+
+app.use(cors());
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const dbURI = "mongodb+srv://junx:joharisoa2001@clustertestnode.tg9keeg.mongodb.net/?retryWrites=true&w=majority";
-mongoose.set("strictQuery", false);
-mongoose
-	.connect(dbURI)
-	.then(() => console.log("Database Connected"))
-	.catch((err) => console.log(err));
 
-mongoose.Promise = global.Promise;
 
+// Routes list
 app.use('/users', usersRouter);
+app.use('/cars', carsRouter);
+app.use('/reparations', reparationsRouter);
+app.use('/payments', paymentsRouter);
+app.use('/reparationDetails', reparationDetailsRouter);
+app.use('/depenses', depensesRouter);
 
 
 // catch 404 and forward to error handler
