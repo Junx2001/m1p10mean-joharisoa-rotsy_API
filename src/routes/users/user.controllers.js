@@ -10,7 +10,7 @@ const mail = require('../../services/mailing/confirm-email');
 const userRegister = async (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
-		.then((user) => {
+		.then( async (user) => {
 			if (user.length >= 1) {
         res.status(409).json({
           message:"Email Exists"
@@ -34,8 +34,11 @@ const userRegister = async (req, res, next) => {
 							.then(async (result) => {
 								await result
 									.save()
-									.then((result1) => {
-                      console.log(`User created ${result}, please verify your email to activate it`)
+									.then(async (result1) => {
+					  await mail.sendConfirmationEmail(result.email, result._id).then((res) =>{ console.log(res)}).catch((err)=>{console.log(err)});
+
+					  console.log(`User created ${result}, please verify your email to activate it`);
+
                       res.status(201).json({
                         userDetails: {
                           userId: result._id,
@@ -173,10 +176,36 @@ const essaiEmail = async (req, res) => {
 
 };
 
+
+const activateAccount = async (req, res) => {
+	if(!req.params.secretTokenEmail || req.params.secretTokenEmail != process.env.SECRET_MAIL_TOKEN)
+	{
+		return res.status(401).json({
+			message: "SECRET TOKEN EMAIL not valid"
+		  });
+	}
+	await User.updateOne({ _id : req.params.userId },{active: 1})
+		.then((result) => {
+						  console.log(`User Account has been verified and activated`);
+						  res.status(200).json({
+							message: 'User Account has been verified and activated',
+							result: result
+						  });
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
+						});
+							});
+
+};
+
 module.exports = {
   userLogin,
   userRegister,
   getMe,
   atelier,
-  essaiEmail
+  essaiEmail,
+  activateAccount
 };
