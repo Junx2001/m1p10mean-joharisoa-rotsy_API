@@ -13,6 +13,8 @@ router.get('/statsCAPerDay/:annee/:mois', checkAuth ,paymentController.statsChif
 router.post('/', checkAuth ,paymentController.addPayment);
 router.post('/validate/:paymentId', checkAuth ,paymentController.validatePayment);
 
+router.get('/statsBeneficesPerMonth/:annee', checkAuth ,paymentController.statsBeneficeParMois);
+
 
 
 module.exports = router;

@@ -13,7 +13,4 @@ router.post('/add', checkAuth ,depenseController.addDepense);
 
 
 
-
-
-
 module.exports = router;

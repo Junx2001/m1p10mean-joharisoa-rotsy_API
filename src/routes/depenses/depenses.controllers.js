@@ -4,7 +4,7 @@ const Depense = require("./depenses.model");
 
 const addDepense = async (req, res) => {
 
-	const depense = new Payment({
+	const depense = new Depense({
 		_id: new mongoo.Types.ObjectId(),
 		intitule: req.body.intitule,
 		montant: req.body.montant,
@@ -64,7 +64,7 @@ const statsDepensesParMois = async (req, res) => {
   			{$match: {year: annee}},
 			{$group: {
 			  _id: { $month: '$date'},
-			  totalCA: {
+			  totalDepenses: {
 				$sum: "$montant"
 			  }
 			}}
