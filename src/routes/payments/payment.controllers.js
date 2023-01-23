@@ -181,6 +181,9 @@ const statsBeneficeParMois = async (req, res) => {
 		res[value._id].total += value.total;
 		return res;
 		}, {});
+		
+
+		result.sort((a,b) =>  a._id - b._id );
 
 
 		console.log(result);
