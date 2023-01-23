@@ -151,7 +151,7 @@ const statsBeneficeParMois = async (req, res) => {
 				}}
 			  
 			],
-		  );
+		  ).sort({ _id: 'asc'});
 
 		const depenses = await Depense.aggregate(
 			[
@@ -165,7 +165,7 @@ const statsBeneficeParMois = async (req, res) => {
 				}}
 			  
 			],
-		  );
+		  ).sort({ _id: 'asc'});
 		for (const dep of depenses) {
 			 dep.total = -dep.total;
 		}
