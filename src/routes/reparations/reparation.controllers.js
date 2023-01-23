@@ -562,7 +562,7 @@ const avgReparationDuration = async (req, res) => {
 
 	const voiture = await Car.findOne({ immatriculation : req.params.immatriculation});
 
-	await Reparation.find({ voiture: voiture._id }).exec().then( async (result) =>{
+	await Reparation.find({ voiture: voiture._id }).sort({ dateDepot: 'desc'}).exec().then( async (result) =>{
 
 		var arrayFinal = [];
 
