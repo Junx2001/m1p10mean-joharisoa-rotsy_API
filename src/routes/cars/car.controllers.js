@@ -31,6 +31,9 @@ const addCar = async (req, res) => {
 			await result
 				.save()
 					.then(async (result1) => {
+
+					if(req.file)
+					{
 						try{
 							const vehicle = await Car.findOne({ _id: car._id});
 							await carService.uploadCarImage(req, res, vehicle);
@@ -43,8 +46,12 @@ const addCar = async (req, res) => {
 							  });
 						}
 
+					}
+					else{
+						return res.status(201).json(car);
+					}
 
-									})
+		})
 									.catch((err) => {
                     console.log(err)
                     res.status(400).json({
