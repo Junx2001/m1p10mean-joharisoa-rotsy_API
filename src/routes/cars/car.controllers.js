@@ -296,6 +296,40 @@ const recoverableCarByUser = async (req, res) =>{
 		});
 }
 
+const fb_service = require('../../services/firebase/firebase-service') // reference to our db 
+
+global.XMLHttpRequest = require("xhr2"); // must be used to avoid bug
+// Add Image to Storage and return the file path
+const addImage = async (req, res) => {
+    try {
+
+		const storageRef = ref(fb_service.storage, 'car-images');
+
+        // Grab the file
+        const file = req.file;        // Format the filename
+        const timestamp = Date.now();
+        const name = file.originalname.split(".")[0];
+        const type = file.originalname.split(".")[1];
+        const fileName = `${name}_${timestamp}.${type}`;    
+		
+		// Step 1. Create reference for file name in cloud storage 
+        // const imageRef = fb_service.storage.child(fileName);        // Step 2. Upload the file in the bucket storage
+        // const snapshot = await imageRef.put(file.buffer);        // Step 3. Grab the public url
+        // const downloadURL = await snapshot.ref.getDownloadURL();
+
+		// 'file' comes from the Blob or File API
+		uploadBytes(storageRef, file).then(async (snapshot) => {
+			const downloadURL = await snapshot.ref.getDownloadURL();
+			console.log('Uploaded a blob or file!');
+			res.send(downloadURL); 
+  			});
+        
+            	}  catch (error) {
+        console.log (error)
+        res.status(400).send(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -306,5 +340,6 @@ module.exports = {
 	carDepositListByUser,
 	searchCar,
 	recoverableCarByUser,
-	allCars
+	allCars,
+	addImage
 };
