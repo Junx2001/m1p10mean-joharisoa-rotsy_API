@@ -12,6 +12,7 @@ const carSchema = new mongoose.Schema({
   },
   modele: String,
   marque: String,
+  imageUrl : String
 });
 
 module.exports = mongoose.model("Car", carSchema);

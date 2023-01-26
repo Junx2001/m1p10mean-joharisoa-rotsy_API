@@ -10,7 +10,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('file');
 
 
-router.post('/add', checkAuth, carController.addCar);
+router.post('/add', [checkAuth, upload], carController.addCar);
 router.get('/all', checkAuth, carController.allCars);
 
 router.post('/deposit/:immatriculation', checkAuth, carController.depositCar);
@@ -22,6 +22,6 @@ router.get('/search', checkAuth, carController.searchCar);
 router.get('/recoverable', checkAuth, carController.recoverableCarByUser);
 
 
-router.post('/upload', upload, carController.addImage);
+router.post('/upload/:carId', upload, carController.addUpdateImage);
 
 module.exports = router;
