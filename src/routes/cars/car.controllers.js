@@ -7,6 +7,7 @@ const carService = require("../../services/car-services");
 
 const repairService = require("../../services/reparation-service");
 
+global.XMLHttpRequest = require("xhr2"); // must be used to avoid bug
 const addCar = async (req, res) => {
 	
 	const car = new Car({
@@ -29,9 +30,20 @@ const addCar = async (req, res) => {
 		.then(async (result) => {
 			await result
 				.save()
-					.then((result1) => {
-                      console.log(`Car has been added to your list of car ${result}`)
-                      res.status(201).json(car)
+					.then(async (result1) => {
+						try{
+							const vehicle = await Car.findOne({ _id: car._id});
+							await carService.uploadCarImage(req, res, vehicle);
+						}	
+						catch(err)
+						{
+							console.log(err);
+							res.status(400).json({
+								message: err.toString()
+							  });
+						}
+
+
 									})
 									.catch((err) => {
                     console.log(err)
@@ -297,6 +309,24 @@ const recoverableCarByUser = async (req, res) =>{
 }
 
 
+// Add Image to Storage and return the file path
+const addUpdateImage = async (req, res) => {
+	try{
+		const car = await Car.findOne({ _id: req.params.carId});
+		await carService.uploadCarImage(req, res, car);
+	}	
+	catch(err)
+	{
+		console.log(err);
+		res.status(400).json({
+			message: err.toString()
+		  });
+	}
+	
+	
+}
+
+
 
 module.exports = {
 	addCar,
@@ -306,5 +336,6 @@ module.exports = {
 	carDepositListByUser,
 	searchCar,
 	recoverableCarByUser,
-	allCars
+	allCars,
+	addUpdateImage
 };
