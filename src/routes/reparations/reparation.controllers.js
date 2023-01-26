@@ -467,7 +467,8 @@ const affectedReparationList = async (req, res) => {
 		if(req.query.dateDepot){
 			result = result.filter( function(res)
 			{
-				if(res.dateDepot == req.query.dateDepot){
+				const dateNew =res.dateDepot.toISOString().split('T')[0]
+				if(dateNew == req.query.dateDepot){
 					return true;
 				}
 				return false;
