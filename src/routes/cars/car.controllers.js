@@ -191,6 +191,23 @@ const carListByUser = async (req, res) => {
 		});
 };
 
+const findCarById = async (req, res) => {
+
+	await Car.findOne({ _id : req.params.carId}).exec()
+		.then(async (result) => {
+
+			res.status(200).json(result);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 const carDepositListByUser = async (req, res) => {
 	const user = req.user;
 	var arrayFinal = []
@@ -333,6 +350,26 @@ const addUpdateImage = async (req, res) => {
 	
 }
 
+const updateCar = async (req, res) => {
+	const newCar = req.body;
+	await Car.updateOne({ _id : req.params.carId },newCar)
+		.then((result) => {
+						  console.log(`Car has been updated`);
+						  res.status(200).json({
+							message: 'Car has been updated',
+							reparation: result
+						  });
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
+						});
+
+					});
+	
+}
+
 
 
 module.exports = {
@@ -344,5 +381,7 @@ module.exports = {
 	searchCar,
 	recoverableCarByUser,
 	allCars,
-	addUpdateImage
+	addUpdateImage,
+	findCarById,
+	updateCar
 };
