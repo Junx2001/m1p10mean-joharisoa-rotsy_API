@@ -351,22 +351,36 @@ const addUpdateImage = async (req, res) => {
 }
 
 const updateCar = async (req, res) => {
-	const newCar = req.body;
-	await Car.updateOne({ _id : req.params.carId },newCar)
-		.then((result) => {
+	const car = {};
+	if(req.body.immatriculation) car.immatriculation = req.body.immatriculation;
+	if(req.body.client) car.client = req.body.client;
+	if(req.body.modele) car.modele = req.body.modele;
+	if(req.body.marque) car.marque = req.body.marque;
+	console.log(car);
+
+	await Car.updateOne({ _id: req.params.carId }, car)
+		.then(async (result) => {
 						  console.log(`Car has been updated`);
-						  res.status(200).json({
-							message: 'Car has been updated',
-							reparation: result
-						  });
+
+						  if(req.file){
+							const vaika = await Car.findOne({ _id: req.params.carId});
+							await carService.uploadCarImage(req, res, vaika);
+						  }
+						  else{
+							res.status(200).json({
+								message: 'Car has been updated',
+								car: result
+							  });
+						  }
+						  
 							})
 			.catch((err) => {
 						console.log(err);
 						res.status(400).json({
 						  message: err.toString()
 						});
+							});
 
-					});
 	
 }
 

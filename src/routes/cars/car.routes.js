@@ -23,7 +23,7 @@ router.get('/recoverable', checkAuth, carController.recoverableCarByUser);
 
 router.get('/:carId', checkAuth, carController.findCarById);
 
-router.put('/:carId', checkAuth, carController.updateCar);
+router.put('/:carId', upload, carController.updateCar);
 
 
 router.post('/upload/:carId', upload, carController.addUpdateImage);
