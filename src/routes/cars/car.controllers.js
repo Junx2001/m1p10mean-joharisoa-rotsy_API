@@ -240,7 +240,7 @@ const carDepositListByUser = async (req, res) => {
 const searchCar = async (req, res) => {
 
 	var arrayFinal = [];
-	var conditions = {};
+	var conditions = { client: req.user.userId };
 	if(req.query.immatriculation){
 		conditions.immatriculation = { $regex: '.*' + req.query.immatriculation + '.*', $options: 'i' };
 	}
