@@ -690,7 +690,7 @@ const unpaidReparationsByUser = async (req, res) => {
 
 const unpaidReparations = async (req, res) => {
 
-	await Reparation.find().populate({
+	await Reparation.find().sort({ dateDepot: 'desc'}).populate({
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec()
