@@ -225,13 +225,21 @@ const findReparationsByCar = async (req, res) => {
 
 			for(let i = 0;i<result.length;i++)
 			{
+
+				var paidReparation = await repairService.getMontantPaidByReparation(result[i]);
 			
-				await ReparationDetails.find({ reparation: result[i]._id}).exec().then((result1) =>{
+				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
+
+					var montantTotal = await repairService.getMontantTotalReparation(result1);
+					
 					//console.log(result1);
 
 					var retour = {
 						repair: result[i],
-						reparationDetail: result1
+						reparationDetail: result1,
+						montantTotal : montantTotal,
+						totalPaid: paidReparation,
+						restToPay: montantTotal-paidReparation
 					};
 					arrayFinal.push(retour);
 
@@ -459,7 +467,8 @@ const affectedReparationList = async (req, res) => {
 		if(req.query.dateDepot){
 			result = result.filter( function(res)
 			{
-				if(res.dateDepot == req.query.dateDepot){
+				const dateNew =res.dateDepot.toISOString().split('T')[0]
+				if(dateNew == req.query.dateDepot){
 					return true;
 				}
 				return false;
@@ -562,13 +571,13 @@ const avgReparationDuration = async (req, res) => {
 
 	const voiture = await Car.findOne({ immatriculation : req.params.immatriculation});
 
-	await Reparation.find({ voiture: voiture._id }).exec().then( async (result) =>{
+	await Reparation.find({ voiture: voiture._id }).sort({ dateDepot: 'desc'}).exec().then( async (result) =>{
 
 		var arrayFinal = [];
 
 			for(let i = 0;i<result.length;i++)
 			{
-				await ReparationDetails.find({ reparation: result[i]._id}).exec().then(async (result1) =>{
+				await ReparationDetails.find({ reparation: result[i]._id, dateDebut: { $ne: null}, dateFin: { $ne: null }}).exec().then(async (result1) =>{
 					//console.log(result1);
 
 					var durationTotal = await repairService.getDurationTotal(result1);

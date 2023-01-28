@@ -44,7 +44,7 @@ const getDurationTotal = async (repairDetailsArray) => {
 
 const getMontantPaidByReparation = async (reparationObject) => {
     var total = 0;
-    const paym = await Payment.find({ reparation : reparationObject._id});
+    const paym = await Payment.find({ reparation : reparationObject._id, valide: 1});
 
     if(paym.length == 0)
     {
