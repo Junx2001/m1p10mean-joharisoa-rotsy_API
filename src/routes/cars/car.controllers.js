@@ -7,6 +7,7 @@ const carService = require("../../services/car-services");
 
 const repairService = require("../../services/reparation-service");
 
+global.XMLHttpRequest = require("xhr2"); // must be used to avoid bug
 const addCar = async (req, res) => {
 	
 	const car = new Car({
@@ -29,10 +30,28 @@ const addCar = async (req, res) => {
 		.then(async (result) => {
 			await result
 				.save()
-					.then((result1) => {
-                      console.log(`Car has been added to your list of car ${result}`)
-                      res.status(201).json(car)
-									})
+					.then(async (result1) => {
+
+					if(req.file)
+					{
+						try{
+							const vehicle = await Car.findOne({ _id: car._id});
+							await carService.uploadCarImage(req, res, vehicle);
+						}	
+						catch(err)
+						{
+							console.log(err);
+							res.status(400).json({
+								message: err.toString()
+							  });
+						}
+
+					}
+					else{
+						return res.status(201).json(car);
+					}
+
+		})
 									.catch((err) => {
                     console.log(err)
                     res.status(400).json({
@@ -172,6 +191,23 @@ const carListByUser = async (req, res) => {
 		});
 };
 
+const findCarById = async (req, res) => {
+
+	await Car.findOne({ _id : req.params.carId}).exec()
+		.then(async (result) => {
+
+			res.status(200).json(result);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 const carDepositListByUser = async (req, res) => {
 	const user = req.user;
 	var arrayFinal = []
@@ -241,6 +277,23 @@ const searchCar = async (req, res) => {
 		});
 };
 
+const allCars = async (req, res) => {
+
+	await Car.find().exec()
+		.then(async (result) => {
+			
+			res.status(200).json(result);
+
+
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(500).json({
+				message: error.toString()
+			  })
+		});
+};
+
 
 const recoverableCarByUser = async (req, res) =>{
 	const user = req.user;
@@ -280,6 +333,58 @@ const recoverableCarByUser = async (req, res) =>{
 }
 
 
+// Add Image to Storage and return the file path
+const addUpdateImage = async (req, res) => {
+	try{
+		const car = await Car.findOne({ _id: req.params.carId});
+		await carService.uploadCarImage(req, res, car);
+	}	
+	catch(err)
+	{
+		console.log(err);
+		res.status(400).json({
+			message: err.toString()
+		  });
+	}
+	
+	
+}
+
+const updateCar = async (req, res) => {
+	const car = {};
+	if(req.body.immatriculation) car.immatriculation = req.body.immatriculation;
+	if(req.body.client) car.client = req.body.client;
+	if(req.body.modele) car.modele = req.body.modele;
+	if(req.body.marque) car.marque = req.body.marque;
+	console.log(car);
+
+	await Car.updateOne({ _id: req.params.carId }, car)
+		.then(async (result) => {
+						  console.log(`Car has been updated`);
+
+						  if(req.file){
+							const vaika = await Car.findOne({ _id: req.params.carId});
+							await carService.uploadCarImage(req, res, vaika);
+						  }
+						  else{
+							res.status(200).json({
+								message: 'Car has been updated',
+								car: result
+							  });
+						  }
+						  
+							})
+			.catch((err) => {
+						console.log(err);
+						res.status(400).json({
+						  message: err.toString()
+						});
+							});
+
+	
+}
+
+
 
 module.exports = {
 	addCar,
@@ -288,5 +393,9 @@ module.exports = {
 	carListByUser,
 	carDepositListByUser,
 	searchCar,
-	recoverableCarByUser
+	recoverableCarByUser,
+	allCars,
+	addUpdateImage,
+	findCarById,
+	updateCar
 };

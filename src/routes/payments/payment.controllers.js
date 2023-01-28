@@ -92,15 +92,16 @@ const statsChiffreAffaireParMois = async (req, res) => {
 			}}
 		  
 		],
-	
-		function(err, result) {
-		  if (err) {
-			res.send(err);
-		  } else {
-			res.json(result);
-		  }
-		}
-	  );
+	  ).sort({_id: 'asc'}).exec().then( async (result) =>{
+		console.log(result);
+
+		res.status(200).send(result);
+
+	  }).catch( (err) =>{
+		console.log(err);
+
+		res.status(400).send({ error: err });
+	  });
 
 }
 
@@ -120,14 +121,17 @@ const statsChiffreAffaireParJour = async (req, res) => {
 		  
 		],
 	
-		function(err, result) {
-		  if (err) {
-			res.send(err);
-		  } else {
-			res.json(result);
-		  }
-		}
-	  );
+		
+	  ).sort({_id: 'asc'}).exec().then( async (result) =>{
+		console.log(result);
+
+		res.status(200).send(result);
+
+	  }).catch( (err) =>{
+		console.log(err);
+
+		res.status(400).send({ error: err });
+	  });
 
 }
 
@@ -147,7 +151,7 @@ const statsBeneficeParMois = async (req, res) => {
 				}}
 			  
 			],
-		  );
+		  ).sort({ _id: 'asc'});
 
 		const depenses = await Depense.aggregate(
 			[
@@ -161,7 +165,7 @@ const statsBeneficeParMois = async (req, res) => {
 				}}
 			  
 			],
-		  );
+		  ).sort({ _id: 'asc'});
 		for (const dep of depenses) {
 			 dep.total = -dep.total;
 		}
@@ -177,6 +181,9 @@ const statsBeneficeParMois = async (req, res) => {
 		res[value._id].total += value.total;
 		return res;
 		}, {});
+		
+
+		result.sort((a,b) =>  a._id - b._id );
 
 
 		console.log(result);
