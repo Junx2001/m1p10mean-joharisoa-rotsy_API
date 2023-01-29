@@ -416,7 +416,7 @@ const affectedReparationList = async (req, res) => {
 	var conditions = {responsableAtelier: { $ne: null }, dateRecup: null};
 
 	var arrayFinal = [];
-	await Reparation.find(conditions).populate({
+	await Reparation.find(conditions).sort({ dateDepot: 'desc'}).populate({
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec().then(async (result) =>{
@@ -618,7 +618,7 @@ const avgReparationDuration = async (req, res) => {
 const unpaidReparationsByUser = async (req, res) => {
 	const user = req.user;
 
-	await Reparation.find().populate({
+	await Reparation.find().sort({ dateDepot: 'desc'}).populate({
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec()
@@ -649,7 +649,11 @@ const unpaidReparationsByUser = async (req, res) => {
 
 					var retour = {
 						repair: result[i],
-						reparationDetail: result1
+						reparationDetail: result1,
+						montantTotal: montantTotal,
+						totalPaid: paidReparation,
+						restToPay: montantTotal - paidReparation 
+						
 					};
 					if(paidReparation < montantTotal || result1.length == 0){
 						arrayFinal.push(retour);
@@ -686,7 +690,7 @@ const unpaidReparationsByUser = async (req, res) => {
 
 const unpaidReparations = async (req, res) => {
 
-	await Reparation.find().populate({
+	await Reparation.find().sort({ dateDepot: 'desc'}).populate({
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec()

@@ -1,78 +1,76 @@
-# M1P10MEAN-JOHARISOA-ROTSY-API #
 
-Car reparation management system
+# M1 Garage Mean Stack Project Joharisoa Rotsy API
+
+Application Programming interface for car repair management system. This API is used by angular for fetching data
+
+
+## API Reference
+
+Full API Reference is available at [Garage Mean Stack M1 API](https://documenter.getpostman.com/view/14904994/2s935hPm5q)
 
 ## Environment Variables
+[.env.dist](./.env.dist) file can be used as `.env` template.
 
-This project uses *different .env files* for each environment stage.
+To run this project, you will need to add the following environment variables to your .env file
 
-| NODE_ENV      | Filename           | Description            |
-| :------------ | :----------------- | :--------------------- |
-| `development` | `.env.development` | For local development  |
-| `staging`     | `.env.staging`     | For software testing   |
-| `production`  | `.env.production`  | Production environment |
+`PORT`
 
-To switch between environments we need to run :
+`jwtSecret` 
 
-```bash
-  # Linux
-  export NODE_ENV=development
-  # export NODE_ENV=staging
-  # Windows
-  set NODE_ENV=development 
-  # set NODE_ENV=staging
-```
-[.env.dist](./.env.dist) file can be used as `.env.your-environment` template.
+#### Mailgun
 
-To run this project, you will need to add the following environment variables to your `.env.your-environment` file
+`MAILGUN_API_KEY`
 
-`PORT` : in case the port 3000 is already used locally
+`MAILGUN_DOMAIN_NAME`
 
-`DBURI` : the MongoDB Server Connection String (example: mongodb+srv://server.example.com/?connectTimeoutMS=300000&authSource=aDifferentAuthDB)
+#### MongDB Connection String
 
-### Mongo Database configurations
-`DB_HOST` : 
+`DB_URI`
 
-`DB_USER` : Mongo user
+#### Mail Secret Token for activating an User Account
 
-`DB_PASSWORD` : user password
+`SECRET_MAIL_TOKEN`
 
-`DB_NAME` : database name
+#### Firebase
 
-### Mailgun configurations
-`MAILGUN_API_KEY` : Mailgun private key
+`API_KEY` 
 
-`MAILGUN_DOMAIN`
+`AUTH_DOMAIN` 
 
-`MAILGUN_USER_NAME`
+`PROJECT_ID`
 
-`MAILGUN_SENDER_NAME` : Garage Team
+`STORAGE_BUCKET`
 
-`MAILGUN_SENDER_EMAIL` : garage@mean.mg
+`MESSAGING_SENDER_ID`
+
+`APP_ID`
+
+`MEASUREMENT_ID`
 
 ## Constants Variables
 
 List of variables used in the project 
 
-### Base Url path constants (src/constants/Url.js)
+#### Base Url path constants (src/constants/Url.js)
 `USER_ROUTE` : /users
 
-### User Roles constants
+#### User Roles constants
 `ROLE_USER_CLIENT` : ROLE_USER_CLIENT
+
 `ROLE_USER_ATELIER` : ROLE_USER_ATELIER
+
 `ROLE_USER_FINANCE` : ROLE_USER_FINANCE
-
-
-
-
 ## Run Locally
+
+Install Github CLI first [Github CLI](https://github.com/cli/cli#installation)
 
 Clone the project
 
-- Install Github CLI first [Github CLI](https://github.com/cli/cli#installation)
 ```bash
   gh repo clone Junx2001/m1p10mean-joharisoa-rotsy_API
 ```
+
+Create `.env` using `.env.dist` as a template and fill with required environnement variables
 
 Go to the project directory
 
@@ -86,92 +84,76 @@ Install dependencies
   npm install
 ```
 
-Set up environment*
+Start the server
 
 ```bash
-  export NODE_ENV=development;
-```
-
-Start the server in development mode
-
-```bash
-  npm run start:dev
+  npm run start
 ```
 
 You can now access the server at [http://localhost:3000](http://localhost:3000) or any PORT specified in .env
 
+
+## Librairies
+
+ - [Bcrypt](https://www.npmjs.com/package/bcrypt)
+ - [body-parser](https://www.npmjs.com/package/body-parser)
+ - [cors](https://www.npmjs.com/package/cors)
+  - [dotenv](https://www.npmjs.com/package/dotenv)
+ - [express](https://www.npmjs.com/package/express)
+ - [express-fileupload](https://www.npmjs.com/package/express-fileupload)
+  - [firebase](https://www.npmjs.com/package/firebase)
+ - [firebase-admin](https://www.npmjs.com/package/firebase-admin)
+ - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
+ - [mailgun-js](https://www.npmjs.com/package/mailgun-js-sdk)
+ - [mongoose](https://www.npmjs.com/package/mongoose)
+ - [morgan](https://www.npmjs.com/package/morgan)
+ - [multer](https://www.npmjs.com/package/multer)
+ - [path](https://www.npmjs.com/package/path)
+ - [xhr2](https://www.npmjs.com/package/xhr2)
+
+## Authors
+
+- [@junx2001](https://github.com/Junx2001)
+
+
+## Demo
+
+Official link to API online : https://m1p10mean-joharisoa-rotsyapi-production.up.railway.app/
+
+Official link to the angular car repair management system which is using the last version of this API : https://m1p10mean-joharisoa-rotsy.vercel.app
+
+
+
+## Tech Stack
+
+**Server:** Node, Express
+
+**Databse:** MongoDb
+
+**Mailign:** Mailgun
+
+**File Storage:** Firebase
+
+
+
 ## Documentation
 
-- [Mailing](https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api)
+Will Be available soon
 
-- [Puppeteer dependencies](https://stackoverflow.com/questions/64361897/puppeteer-not-working-on-vps-but-running-locally)
 
+## Installation
+
+Install m1p10mean-joharisoa-rotsy_API with npm
 
 ```bash
-  sudo apt-get install libnss3-dev
-
-  sudo apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget libgbm-dev
+  npm install m1p10mean-joharisoa-rotsy_API
+  cd m1p10mean-joharisoa-rotsy_API
 ```
-
-### Libraries
-
-- [HttpClient](https://www.npmjs.com/package/axios) 
-
-- [Puppeteer](https://www.npmjs.com/package/puppeteer)
-
-- [Mailgun.js](https://www.npmjs.com/package/mailgun.js)
-
-## API Reference
-
-Return `PDF File`
-
-#### Login User
-
-```http
-  POST /users/login/
-```
-
-| Parameter      | Type            | Description                                  |
-| :------------- | :-------------- | :------------------------------------------- |
-| `email`        | **String**      | **Required**. Email of user in database.     |
-| `password`     | **String**      | **Required**. Id of reservation in database. |
-
-Return `PDF File`
-
-
-```json
-  {
-    "email": example@domain.com,
-    "password": examplepassword,
-  }
-```
-
-
-#### Signup User
-
-```http
-  POST /users/signup/
-```
-
-| Parameter      | Type            | Description                                                   |
-| :------------- | :-------------- | :------------------------------------------------------------ |
-| `email`        | **String**      | **Required**. Email of User                                   |
-| `name`         | **String**      | **Required**. Name of User                                    |
-| `password`     | **String**      | **Required**. Password of User                                |
-| `role`         | **String**      | **Required**. User Role                                       |
-
-Return `PDF File`
-
-**Note:** Roles are defined in src/constants/UserRole.js
-
-```json
-  {
-    "email": example@domain.com,
-    "name": examplename,
-    "password": examplepassword,
-    "role": ROLE_USER_CLIENT,
     
-    
-  }
-```
+![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+
+
+## Deployment
+
+Hosted by (https://railway.app/)
 
