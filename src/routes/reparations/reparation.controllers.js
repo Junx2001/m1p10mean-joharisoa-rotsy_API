@@ -416,7 +416,7 @@ const affectedReparationList = async (req, res) => {
 	var conditions = {responsableAtelier: { $ne: null }, dateRecup: null};
 
 	var arrayFinal = [];
-	await Reparation.find(conditions).populate({
+	await Reparation.find(conditions).sort({ dateDepot: 'desc'}).populate({
 		path: 'voiture',
 		populate: { path: 'client' }
 	  }).exec().then(async (result) =>{
