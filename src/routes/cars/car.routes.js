@@ -8,10 +8,10 @@ const router = express.Router();
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('file');
-
+const UserRole = require('../../constants/UserRole');
 
 router.post('/add', [checkAuth, upload], carController.addCar);
-router.get('/all', checkAuth, carController.allCars);
+router.get('/all', [checkAuth, checkRole([UserRole.ROLE_USER_FINANCE])], carController.allCars);
 
 router.post('/deposit/:immatriculation', checkAuth, carController.depositCar);
 router.post('/recover/:immatriculation', checkAuth, carController.recoverCar);
