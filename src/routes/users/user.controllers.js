@@ -107,9 +107,7 @@ const userLogin = (req, res, next) => {
 							role: user[0].role,
 						},
 						process.env.jwtSecret,
-						{
-							expiresIn: "1d",
-						}
+						{}
           );
           console.log(user[0])
 					return res.status(200).json({
